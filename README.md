@@ -12,7 +12,7 @@ face. It works by having a background of lines going one direction, while
 another layer has lines in the other direction. The number digits change the
 direction of the lines.
 
-Thanks to [RichardG][2] for the assets. Based on the Kisai [Optical Illusion 
+Thanks to [RichardG][2] for the assets. Based on the [Kisai Optical Illusion 
 watch from TokyoFlash][1].
 
 [0]: https://s3.amazonaws.com/dmnd-public/pebble/illusion.pbw
