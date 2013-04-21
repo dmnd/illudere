@@ -10,68 +10,186 @@
 
 PBL_APP_INFO(MY_UUID,
              "Illusion", "Desmond Brand",
-             1, 0, /* App version */
+             1, 1, /* App version */
              DEFAULT_MENU_ICON,
              APP_INFO_WATCH_FACE);
 
-Window window;
-BmpContainer background_image;
+#define DEBUG fals
+#define TILE_SIZE 10
+const unsigned char LINE[] = {0, 0, 1, 1, 1, 1, 1, 0, 0, 0};
+#define FONT font_thin
 
-const int RESOURCE_ID_NUMERAL[] = {
-  RESOURCE_ID_NUMERAL_0,
-  RESOURCE_ID_NUMERAL_1,
-  RESOURCE_ID_NUMERAL_2,
-  RESOURCE_ID_NUMERAL_3,
-  RESOURCE_ID_NUMERAL_4,
-  RESOURCE_ID_NUMERAL_5,
-  RESOURCE_ID_NUMERAL_6,
-  RESOURCE_ID_NUMERAL_7,
-  RESOURCE_ID_NUMERAL_8,
-  RESOURCE_ID_NUMERAL_9
-};
+// distance on left and right of text
+#define PADDING_X 3
+#define PADDING_Y 1
 
-#define TOTAL_TIME_DIGITS 4
-BmpContainer time_digits_images[TOTAL_TIME_DIGITS];
+// distance between characters
+#define SPACING_X 2
+#define SPACING_Y 2
 
-void set_container_image(BmpContainer *bmp_container, const int resource_id,
-                         GPoint origin) {
-  layer_remove_from_parent(&bmp_container->layer.layer);
-  bmp_deinit_container(bmp_container);
+size_t LINE_N = sizeof LINE / sizeof *LINE;
 
-  bmp_init_container(resource_id, bmp_container);
+unsigned char font_thick[][5][3] =  {{
+  {1, 1, 1},
+  {1, 0, 1},
+  {1, 0, 1},
+  {1, 0, 1},
+  {1, 1, 1}
+}, {
+  {1, 1, 0},
+  {0, 1, 0},
+  {0, 1, 0},
+  {0, 1, 0},
+  {1, 1, 1}
+}, {
+  {1, 1, 1},
+  {0, 0, 1},
+  {1, 1, 1},
+  {1, 0, 0},
+  {1, 1, 1}
+}, {
+  {1, 1, 1},
+  {0, 0, 1},
+  {1, 1, 1},
+  {0, 0, 1},
+  {1, 1, 1}
+}, {
+  {1, 0, 1},
+  {1, 0, 1},
+  {1, 1, 1},
+  {0, 0, 1},
+  {0, 0, 1}
+}, {
+  {1, 1, 1},
+  {1, 0, 0},
+  {1, 1, 1},
+  {0, 0, 1},
+  {1, 1, 1}
+}, {
+  {1, 1, 1},
+  {1, 0, 0},
+  {1, 1, 1},
+  {1, 0, 1},
+  {1, 1, 1}
+}, {
+  {1, 1, 1},
+  {0, 0, 1},
+  {0, 0, 1},
+  {0, 0, 1},
+  {0, 0, 1}
+}, {
+  {1, 1, 1},
+  {1, 0, 1},
+  {1, 1, 1},
+  {1, 0, 1},
+  {1, 1, 1}
+}, {
+  {1, 1, 1},
+  {1, 0, 1},
+  {1, 1, 1},
+  {0, 0, 1},
+  {1, 1, 1}
+}};
 
-  GRect frame = layer_get_frame(&bmp_container->layer.layer);
-  frame.origin.x = origin.x;
-  frame.origin.y = origin.y;
-  layer_set_frame(&bmp_container->layer.layer, frame);
+unsigned char font_thin[][7][4] =  {{
+  {1, 1, 1, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 1, 1, 1}
+}, {
+  {0, 1, 1, 0},
+  {0, 0, 1, 0},
+  {0, 0, 1, 0},
+  {0, 0, 1, 0},
+  {0, 0, 1, 0},
+  {0, 0, 1, 0},
+  {0, 1, 1, 1}
+}, {
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {1, 1, 1, 1},
+  {1, 0, 0, 0},
+  {1, 0, 0, 0},
+  {1, 1, 1, 1}
+}, {
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {1, 1, 1, 1}
+}, {
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1}
+}, {
+  {1, 1, 1, 1},
+  {1, 0, 0, 0},
+  {1, 0, 0, 0},
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {1, 1, 1, 1}
+}, {
+  {1, 1, 1, 1},
+  {1, 0, 0, 0},
+  {1, 0, 0, 0},
+  {1, 1, 1, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 1, 1, 1}
+}, {
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1}
+}, {
+  {1, 1, 1, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 1, 1, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 1, 1, 1}
+}, {
+  {1, 1, 1, 1},
+  {1, 0, 0, 1},
+  {1, 0, 0, 1},
+  {1, 1, 1, 1},
+  {0, 0, 0, 1},
+  {0, 0, 0, 1},
+  {1, 1, 1, 1}
+}};
 
-  layer_add_child(&window.layer, &bmp_container->layer.layer);
-}
+#define FONT_HEIGHT (sizeof *FONT / sizeof **FONT)
+#define FONT_WIDTH (sizeof **FONT)
 
-const int XS[] = {17, 77};
-const int YS[] = {4, 94};
+#define SCREEN_WIDTH 144
+#define SCREEN_HEIGHT 168
 
-void set_time(unsigned short display_hour, unsigned short display_min) {
-  // hours
-  set_container_image(
-    &time_digits_images[0],
-    RESOURCE_ID_NUMERAL[display_hour/10],
-    GPoint(XS[0], YS[0]));
-  set_container_image(
-    &time_digits_images[1],
-    RESOURCE_ID_NUMERAL[display_hour%10],
-    GPoint(XS[1], YS[0]));
+#define TILES_X ( \
+  PADDING_X + FONT_WIDTH + SPACING_X + FONT_WIDTH + PADDING_X)
+#define TILES_Y ( \
+  PADDING_Y + FONT_HEIGHT + SPACING_Y + FONT_HEIGHT + PADDING_Y)
 
-  // minutes
-  set_container_image(
-    &time_digits_images[2],
-    RESOURCE_ID_NUMERAL[display_min/10],
-    GPoint(XS[0], YS[1]));
-  set_container_image(
-    &time_digits_images[3],
-    RESOURCE_ID_NUMERAL[display_min%10],
-    GPoint(XS[1], YS[1]));
-}
+#define ORIGIN_X ((SCREEN_WIDTH - TILES_X*TILE_SIZE)/2)
+#define ORIGIN_Y ((SCREEN_HEIGHT - TILES_Y*TILE_SIZE)/2)
+
+unsigned char frames[2][TILES_X][TILES_Y];
+size_t current_frame = 0;
+size_t prev_frame = 1;
 
 unsigned short get_display_hour(unsigned short hour) {
   if (clock_is_24h_style()) {
@@ -81,52 +199,132 @@ unsigned short get_display_hour(unsigned short hour) {
   return display_hour ? display_hour : 12;
 }
 
-void update_display(PblTm *current_time) {
-  // TODO: Only update changed values?
-  unsigned short display_hour = get_display_hour(current_time->tm_hour);
-  set_time(display_hour, current_time->tm_min);
-}
+#define OFFSET 0
+unsigned char get_pixel(size_t i, size_t j, bool fg) {
+  int fgf = fg ? 1 : -1;
+  size_t x = ((i + j*fgf + TILE_SIZE + OFFSET)%TILE_SIZE) * LINE_N/TILE_SIZE;
+  return LINE[x % LINE_N];
+};
 
-void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
-  (void)ctx;
-  update_display(t->tick_time);
-}
+// TODO: Do the work to generate the bitmap only once, then use
+// graphics_draw_bitmap_in_rect? It's probably faster.
+#define REVERSE_STROKE false
+void draw_tile(GContext* ctx, size_t x, size_t y, bool fg) {
+  for (size_t j = 0; j < TILE_SIZE; j++) {
+    for (size_t i = 0; i < TILE_SIZE; i++) {
+      if (get_pixel(i, j, fg)) {
+        graphics_context_set_stroke_color(ctx, GColorBlack);
+      } else {
+        graphics_context_set_stroke_color(ctx, GColorWhite);
+      }
 
-void handle_init(AppContextRef ctx) {
-  (void)ctx;
+      graphics_draw_pixel(ctx, GPoint(
+        ORIGIN_X + x*TILE_SIZE + i,
+        ORIGIN_Y + y*TILE_SIZE + j));
+    }
+  }
+};
 
-  window_init(&window, "Illusion");
-  window_stack_push(&window, true /* Animated */);
+size_t DIGIT_X[] = {PADDING_X, PADDING_X + FONT_WIDTH+SPACING_X};
+size_t DIGIT_Y[] = {PADDING_Y, PADDING_Y + FONT_HEIGHT+SPACING_Y};
 
-  resource_init_current_app(&APP_RESOURCES);
-
-  // draw background
-  bmp_init_container(RESOURCE_ID_BACKGROUND, &background_image);
-  layer_add_child(&window.layer, &background_image.layer.layer);
-
-  // avoid a blank screen on watch start
-  PblTm tick_time;
-  get_time(&tick_time);
-  update_display(&tick_time);
-}
-
-void handle_deinit(AppContextRef ctx) {
-  (void)ctx;
-  bmp_deinit_container(&background_image);
-
-  for (int i = 0; i < TOTAL_TIME_DIGITS; i++) {
-    bmp_deinit_container(&time_digits_images[i]);
+void draw_digit(unsigned short d, size_t x, size_t y) {
+  for (size_t j = 0; j < FONT_HEIGHT; j++) {
+    for (size_t i = 0; i < FONT_WIDTH; i++) {
+      frames[current_frame][DIGIT_X[x]+i][DIGIT_Y[y]+j] = FONT[d][j][i];
+    }
   }
 }
 
+void draw_rect(size_t x1, size_t y1, size_t x2, size_t y2, unsigned char v) {
+  for (size_t y = y1; y < y2; y++) {
+    for (size_t x = 0; x < x2; x++) {
+      frames[current_frame][x][y] = v;
+    }
+  }
+}
+
+void swap(size_t* a, size_t* b) {
+  size_t temp = *a;
+  *a = *b;
+  *b = temp;
+}
+
+void display_layer_update_cb(Layer *me, GContext* ctx) {
+  PblTm t;
+  get_time(&t);
+  unsigned short display_hour = get_display_hour(t.tm_hour);
+  unsigned short display_min = t.tm_min;
+  unsigned short display_sec = t.tm_sec;
+
+  unsigned short row1, row2;
+  if (DEBUG) {
+    row1 = display_min;
+    row2 = display_sec;
+  } else {
+    row1 = display_hour;
+    row2 = display_min;
+  }
+
+  draw_rect(0, 0, TILES_X, TILES_Y, 0);
+  draw_digit(row1/10, 0, 0);
+  draw_digit(row1%10, 1, 0);
+  draw_digit(row2/10, 0, 1);
+  draw_digit(row2%10, 1, 1);
+
+  // now redraw tiles that have changed
+  for (size_t j = 0; j < TILES_Y; j++) {
+    for (size_t i = 0; i < TILES_X; i++) {
+      unsigned char v = frames[current_frame][i][j];
+      // TODO: make this only redraw when tiles have changed. At the moment,
+      // I am marking the entire display_layer as dirty which seems to mean
+      // I have to repaint the whole thing. Probably what I want is is separate
+      // layer for each tile?
+
+      // if (v != frames[prev_frame][i][j]) {
+        draw_tile(ctx, i, j, v == 1);
+        frames[prev_frame][i][j] = v;
+      // }
+    }
+  }
+
+  swap(&current_frame, &prev_frame);
+}
+
+Window window;
+Layer display_layer;
+
+void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
+  layer_mark_dirty(&display_layer);
+}
+
+void handle_init(AppContextRef ctx) {
+  window_init(&window, "Illusion");
+  window_stack_push(&window, true /* Animated */);
+
+  // init both frames to 2
+  draw_rect(0, 0, TILES_X, TILES_Y, 2);
+  draw_rect(0, 0, TILES_X, TILES_Y, 2);
+
+  // Init the layer for the display
+  layer_init(&display_layer, window.layer.frame);
+  display_layer.update_proc = &display_layer_update_cb;
+  layer_add_child(&window.layer, &display_layer);
+}
+
 void pbl_main(void *params) {
+  unsigned char units;
+  if (DEBUG) {
+    units = SECOND_UNIT;
+  } else {
+    units = MINUTE_UNIT;
+  }
   PebbleAppHandlers handlers = {
     .init_handler = &handle_init,
-    .deinit_handler = &handle_deinit,
 
     .tick_info = {
       .tick_handler = &handle_minute_tick,
-      .tick_units = MINUTE_UNIT
+      .tick_units = units
     }
   };
   app_event_loop(params, &handlers);

@@ -2,48 +2,8 @@
   "friendlyVersion": "APP_RESOURCES",
   "versionDefName": "APP_RESOURCES",
   "media": [{
-    "type": "png",
-    "defName": "BACKGROUND",
-    "file": "images/app/background.png"
-  }, {
-      "type": "png",
-      "defName": "NUMERAL_0",
-      "file": "images/app/0.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_1",
-      "file": "images/app/1.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_2",
-      "file": "images/app/2.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_3",
-      "file": "images/app/3.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_4",
-      "file": "images/app/4.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_5",
-      "file": "images/app/5.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_6",
-      "file": "images/app/6.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_7",
-      "file": "images/app/7.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_8",
-      "file": "images/app/8.png"
-    }, {
-      "type": "png",
-      "defName": "NUMERAL_9",
-      "file": "images/app/9.png"
-    }]
+    "type":"raw",
+    "defName":"DUMMY",
+    "file":"resource_map.json"
+  }]
 }
