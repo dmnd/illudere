@@ -14,7 +14,7 @@ PBL_APP_INFO(MY_UUID,
              DEFAULT_MENU_ICON,
              APP_INFO_WATCH_FACE);
 
-#define DEBUG fals
+#define DEBUG false
 #define TILE_SIZE 10
 const unsigned char LINE[] = {0, 0, 1, 1, 1, 1, 1, 0, 0, 0};
 #define FONT font_thin
