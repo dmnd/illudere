@@ -1,18 +1,6 @@
-#include "pebble_os.h"
-#include "pebble_app.h"
-#include "pebble_fonts.h"
+#include <pebble.h>
+#include <time.h>
 
-
-#define MY_UUID { \
-  0x97, 0x43, 0x2C, 0xDD, 0x14, 0xAC, 0x4E, 0x45, \
-  0x9F, 0xBC, 0x20, 0xF1, 0xAF, 0x30, 0xC1, 0xE9 \
-}
-
-PBL_APP_INFO(MY_UUID,
-             "Illusion", "Desmond Brand",
-             1, 1, /* App version */
-             DEFAULT_MENU_ICON,
-             APP_INFO_WATCH_FACE);
 
 #define DEBUG false
 #define TILE_SIZE 10
@@ -251,11 +239,12 @@ void swap(size_t* a, size_t* b) {
 }
 
 void display_layer_update_cb(Layer *me, GContext* ctx) {
-  PblTm t;
-  get_time(&t);
-  unsigned short display_hour = get_display_hour(t.tm_hour);
-  unsigned short display_min = t.tm_min;
-  unsigned short display_sec = t.tm_sec;
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);
+
+  unsigned short display_hour = get_display_hour(t->tm_hour);
+  unsigned short display_min = t->tm_min;
+  unsigned short display_sec = t->tm_sec;
 
   unsigned short row1, row2;
   if (DEBUG) {
@@ -291,41 +280,50 @@ void display_layer_update_cb(Layer *me, GContext* ctx) {
   swap(&current_frame, &prev_frame);
 }
 
-Window window;
-Layer display_layer;
+Window* window;
+Layer* display_layer;
 
-void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
-  layer_mark_dirty(&display_layer);
+static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
+  // APP_LOG(APP_LOG_LEVEL_DEBUG, "Time flies!");
+  layer_mark_dirty(display_layer);
 }
 
-void handle_init(AppContextRef ctx) {
-  window_init(&window, "Illusion");
-  window_stack_push(&window, true /* Animated */);
+void init(void) {
+  window = window_create();
+  window_stack_push(window, true /* Animated */);
 
+  // TODO(dmnd) try another colour
+  window_set_background_color(window, GColorBlack);
+
+  // TODO(dmnd) try to remember what this does...
   // init both frames to 2
   draw_rect(0, 0, TILES_X, TILES_Y, 2);
   draw_rect(0, 0, TILES_X, TILES_Y, 2);
 
   // Init the layer for the display
-  layer_init(&display_layer, window.layer.frame);
-  display_layer.update_proc = &display_layer_update_cb;
-  layer_add_child(&window.layer, &display_layer);
-}
+  Layer *root_layer = window_get_root_layer(window);
+  GRect frame = layer_get_frame(root_layer);
+  display_layer = layer_create(frame);
+  layer_set_update_proc(display_layer, &display_layer_update_cb);
+  layer_add_child(root_layer, display_layer);
 
-void pbl_main(void *params) {
   unsigned char units;
   if (DEBUG) {
     units = SECOND_UNIT;
   } else {
     units = MINUTE_UNIT;
   }
-  PebbleAppHandlers handlers = {
-    .init_handler = &handle_init,
+  tick_timer_service_subscribe(units, &handle_minute_tick);
+}
 
-    .tick_info = {
-      .tick_handler = &handle_minute_tick,
-      .tick_units = units
-    }
-  };
-  app_event_loop(params, &handlers);
+void deinit(void) {
+  tick_timer_service_unsubscribe();
+  layer_destroy(display_layer);
+  window_destroy(window);
+}
+
+int main(void) {
+  init();
+  app_event_loop();
+  deinit();
 }

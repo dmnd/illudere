@@ -1,9 +1,0 @@
-{
-  "friendlyVersion": "APP_RESOURCES",
-  "versionDefName": "APP_RESOURCES",
-  "media": [{
-    "type":"raw",
-    "defName":"DUMMY",
-    "file":"resource_map.json"
-  }]
-}
