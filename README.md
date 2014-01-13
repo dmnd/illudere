@@ -5,7 +5,7 @@ This is a custom watchface for the Pebble smart watch. [Download it][0].
 
 It looks like this:
 
-![](/screenshot.png)
+![](https://raw.github.com/dmnd/illusion/master/screenshot.png)
 
 Although it may not be immediately apparent, there are 4 large numbers on this
 face. It works by having a background of lines going one direction, while
