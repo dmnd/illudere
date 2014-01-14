@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-s3cmd -c ~/.s3cfg-me put build/illudure.pbw s3://dmnd-public/pebble/
+s3cmd -v -c ~/.s3cfg-me put --acl-public build/illudere.pbw s3://dmnd-public/pebble/
