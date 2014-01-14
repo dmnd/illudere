@@ -1,10 +1,10 @@
 {
   "uuid": "97432cdd-14ac-4e45-9fbc-20f1af30c1e9",
-  "shortName": "Illusion",
-  "longName": "Illusion",
+  "shortName": "Illudure",
+  "longName": "Illudure",
   "companyName": "Desmond Brand",
   "versionCode": 1,
-  "versionLabel": "1.2.0",
+  "versionLabel": "1.2.1",
   "watchapp": {
     "watchface": true
   },
