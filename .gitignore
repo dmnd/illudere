@@ -1,4 +1,4 @@
-
 # Ignore build generated files
 build
-.lock-waf_darwin_build
+node_modules
+.lock-waf*
