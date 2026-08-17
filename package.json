@@ -1,0 +1,29 @@
+{
+  "name": "illudere",
+  "author": "Desmond Brand",
+  "version": "2.0.0",
+  "keywords": ["pebble-app", "watchface"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Illudere",
+    "uuid": "97432cdd-14ac-4e45-9fbc-20f1af30c1e9",
+    "sdkVersion": "3",
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk",
+      "diorite",
+      "emery",
+      "flint",
+      "gabbro"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "capabilities": [],
+    "resources": {
+      "media": []
+    }
+  }
+}
